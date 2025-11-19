@@ -431,6 +431,7 @@
   });
 
   // If user switches system timezone/time, recompute if necessary on focus
+  
   window.addEventListener('focus', () => {
     if (new Date() > target) target = nextJan6();
     updateCountdown();
