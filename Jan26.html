@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Countdown to 6 January</title>
+<style>
+  :root{
+    --bg: #0b0e12;
+    --card-bg: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    --text: #e8eef6;
+    --muted: #9fb0c8;
+    --accent: #e6eef9;
+    --box-bg: #1f2933;
+    --box-text: #fff;
+    --shadow: 0 10px 30px rgba(0,0,0,0.6);
+  }
+  :root[data-theme="light"]{
+    --bg: #f6fbff;
+    --card-bg: rgba(255,255,255,0.9);
+    --text: #222;
+    --muted: #555;
+    --accent: #333;
+    --box-bg: #333;
+    --box-text: #fff;
+    --shadow: 0 8px 24px rgba(20,30,40,0.12);
+  }
+
+  html,body{
+    height:100%;
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background-color:var(--bg);
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px;
+  }
+
+  .card{
+    width:100%;
+    max-width:980px;
+    border-radius:18px;
+    background:var(--card-bg);
+    box-shadow:var(--shadow);
+    padding:34px;
+    position:relative;
+    overflow:hidden;
+  }
+
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  h1{
+    margin:0;
+    font-size:40px;
+  }
+
+  button{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.15);
+    padding:8px 12px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+    color:var(--text);
+  }
+
+  .toggle{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,0.15);
+    cursor:pointer;
+  }
+
+  .switch{
+    width:44px;
+    height:24px;
+    background:#1e2933;
+    border-radius:12px;
+    position:relative;
+  }
+
+  .knob{
+    width:18px;
+    height:18px;
+    background:#fff;
+    border-radius:50%;
+    position:absolute;
+    top:3px;
+    left:23px; /* dark default */
+    transition:all .18s ease;
+  }
+  :root[data-theme="light"] .switch{
+    background:#ddd;
+  }
+  :root[data-theme="light"] .knob{
+    left:3px;
+    background:#333;
+  }
+
+  .center{
+    text-align:center;
+    margin-top:20px;
+  }
+
+  .count-grid{
+    display:flex;
+    gap:18px;
+    justify-content:center;
+    margin:20px 0;
+    flex-wrap:wrap;
+  }
+
+  .count-box{
+    background:var(--box-bg);
+    color:var(--box-text);
+    padding:18px;
+    border-radius:12px;
+    width:150px;
+  }
+
+  .count-num{
+    font-size:60px;
+    font-weight:900;
+  }
+
+  .count-label{
+    margin-top:6px;
+    font-size:18px;
+    opacity:0.9;
+  }
+
+  .big-date{
+    font-size:60px;
+    font-weight:900;
+    margin-top:10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <header>
+    <h1>Countdown to 6 January</h1>
+
+    <div class="toggle" id="themeToggle">
+      <span>Light</span>
+      <div class="switch"><div class="knob"></div></div>
+    </div>
+
+    <button id="fsBtn">Full Screen ⤢</button>
+  </header>
+
+  <div class="center">
+    <div>There are</div>
+
+    <div class="count-grid">
+      <div class="count-box">
+        <div class="count-num" id="days">0</div>
+        <div class="count-label">Days</div>
+      </div>
+
+      <div class="count-box">
+        <div class="count-num" id="hours">0</div>
+        <div class="count-label">Hours</div>
+      </div>
+
+      <div class="count-box">
+        <div class="count-num" id="minutes">0</div>
+        <div class="count-label">Minutes</div>
+      </div>
+
+      <div class="count-box">
+        <div class="count-num" id="seconds">0</div>
+        <div class="count-label">Seconds</div>
+      </div>
+    </div>
+
+    <div>to</div>
+    <div class="big-date">6 January!</div>
+  </div>
+
+</div>
+
+<script>
+  function nextJan6() {
+    const now = new Date();
+    let year = now.getFullYear();
+    let d = new Date(year, 0, 6);
+    if (now > d) d = new Date(year + 1, 0, 6);
+    return d;
+  }
+  let target = nextJan6();
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function update() {
+    const now = new Date();
+    const diff = target - now;
+
+    if (diff <= 0) target = nextJan6();
+
+    const s = Math.floor(diff / 1000);
+    const days = Math.floor(s / 86400);
+    const hours = Math.floor((s % 86400) / 3600);
+    const mins = Math.floor((s % 3600) / 60);
+    const secs = s % 60;
+
+    daysEl.textContent = days;
+    hoursEl.textContent = pad(hours);
+    minutesEl.textContent = pad(mins);
+    secondsEl.textContent = pad(secs);
+  }
+
+  const daysEl = document.getElementById("days");
+  const hoursEl = document.getElementById("hours");
+  const minutesEl = document.getElementById("minutes");
+  const secondsEl = document.getElementById("seconds");
+
+  update();
+  setInterval(update, 1000);
+
+  // ---- THEME SYSTEM ----
+  const root = document.documentElement;
+  const toggle = document.getElementById("themeToggle");
+
+  function setTheme(mode){
+    if(mode==="light"){
+      root.setAttribute("data-theme","light");
+      localStorage.setItem("theme","light");
+    } else {
+      root.removeAttribute("data-theme");
+      localStorage.setItem("theme","dark");
+    }
+  }
+
+  // Default = DARK
+  let saved = localStorage.getItem("theme");
+  if(saved === "light"){
+    setTheme("light");
+  } else {
+    setTheme("dark");
+  }
+
+  toggle.addEventListener("click",()=>{
+    if(root.getAttribute("data-theme")==="light"){
+      setTheme("dark");
+    } else {
+      setTheme("light");
+    }
+  });
+
+  // ---- FULLSCREEN ----
+  document.getElementById("fsBtn").onclick = async () => {
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen();
+      fsBtn.textContent = "Exit Full Screen ⤡";
+    } else {
+      await document.exitFullscreen();
+      fsBtn.textContent = "Full Screen ⤢";
+    }
+  };
+</script>
+
+</body>
+</html>
